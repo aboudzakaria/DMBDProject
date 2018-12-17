@@ -107,7 +107,9 @@ venv.bak/
 .vscode/
 
 # data
-data/
+xml/
 text/
+pkl/
 test.csv
 train.csv
+no_text.pkl
