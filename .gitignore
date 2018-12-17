@@ -109,7 +109,7 @@ venv.bak/
 # data
 xml/
 text/
-pkl/
+tkn/
 test.csv
 train.csv
 no_text.pkl
