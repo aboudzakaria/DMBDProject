@@ -9,14 +9,14 @@ from nltk.stem.porter import PorterStemmer
 
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 XML_DIR = os.path.join(CURRENT_DIR, "xml")
-PKL_DIR = os.path.join(CURRENT_DIR, "pkl")
+TKN_DIR = os.path.join(CURRENT_DIR, "tkn")
 
 if not os.path.exists(XML_DIR):
     print("Error: xml directory not found!")
     exit(-1)
 
-if not os.path.exists(PKL_DIR):
-    os.mkdir(PKL_DIR)
+if not os.path.exists(TKN_DIR):
+    os.mkdir(TKN_DIR)
 
 i, n = 0, -1
 FORCE_PROCESS = True
@@ -32,14 +32,18 @@ STOPWORDS = set(stopwords.words('english'))
 PUNCTUATIONS = set(string.punctuation)
 porter = PorterStemmer()
 
+#
+# begin processing
+#
+
 for filename in sorted(os.listdir(XML_DIR)):
     if filename.lower().endswith(".xml"):
         if n < 0 or i < n:
             i += 1
         else:
             break
-        pklfilename = filename.replace(".xml", ".pkl")
-        if os.path.isfile(os.path.join(PKL_DIR, pklfilename)) and not FORCE_PROCESS:
+        tknfilename = filename.replace(".xml", ".tkn")
+        if os.path.isfile(os.path.join(TKN_DIR, tknfilename)) and not FORCE_PROCESS:
             continue
 
         try:
@@ -54,11 +58,17 @@ for filename in sorted(os.listdir(XML_DIR)):
                     print("SKIPPING: " + filename)
                     continue
 
+            # manual fixes
+            raw_text = raw_text.replace('-', ' ') # dashes!
+            raw_text = raw_text.replace('/', ' ') # slashes!
+            raw_text = raw_text.replace('+', ' ') # pluses!
+            raw_text = raw_text.lower()
+
             # nltk tokenize words
             tokens = word_tokenize(raw_text)
 
             # process tokens
-            filtered_tokens = []
+            clean_tokens = []
             for w in tokens:
                 # filter punctuations
                 if w in PUNCTUATIONS:
@@ -72,11 +82,11 @@ for filename in sorted(os.listdir(XML_DIR)):
                 # stem the word
                 w = porter.stem(w)
                 # finally insert the word
-                filtered_tokens.append(w.lower())
+                clean_tokens.append(w)
 
             # pickle data
-            with open(os.path.join(PKL_DIR, pklfilename), 'wb') as pklfile:
-                pickle.dump(filtered_tokens, pklfile)
+            with open(os.path.join(TKN_DIR, tknfilename), 'w') as pklfile:
+                pklfile.write(','.join(clean_tokens))
 
         except Exception as err:
             print("Exception: {0}".format(err))
