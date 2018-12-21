@@ -3,7 +3,7 @@
 import os, re, string, pickle
 from lxml import etree
 from nltk import word_tokenize
-from nltk.corpus import stopwords
+from nltk.corpus import stopwords, wordnet
 from nltk.stem.porter import PorterStemmer
 #from nltk.tokenize import TweetTokenizer
 
@@ -27,7 +27,7 @@ no_text = []
 FORCE_NO_TEXT = True
 
 # NLTK stuff
-HAS_LETTERS = ".*[a-zA-Z]+"
+HAS_NUMBERS = ".*[0-9]+"
 STOPWORDS = set(stopwords.words('english'))
 PUNCTUATIONS = set(string.punctuation)
 porter = PorterStemmer()
@@ -35,6 +35,8 @@ porter = PorterStemmer()
 #
 # begin processing
 #
+
+token_vector = set([])
 
 for filename in sorted(os.listdir(XML_DIR)):
     if filename.lower().endswith(".xml"):
@@ -70,27 +72,45 @@ for filename in sorted(os.listdir(XML_DIR)):
             # process tokens
             clean_tokens = []
             for w in tokens:
-                # filter punctuations
-                if w in PUNCTUATIONS:
-                    continue
+                # filter punctuations with extra check!
+                for p in PUNCTUATIONS:
+                    w = w.replace(p, '')
                 # filter stopwords
                 if w in STOPWORDS:
                     continue
                 # replace numbers into the word 'number'
-                if not bool(re.match(HAS_LETTERS, w)):
+                if bool(re.match(HAS_NUMBERS, w)):
                     w = "number"
+                # try finding a synonym which is already in the vector!
+                try:
+                    synonyms = [porter.stem(s.lower()) for s in wordnet.synsets(w)[0].lemma_names()]
+                    for s in synonyms:
+                        if s in token_vector and w != s:
+                            print(w + ' -> ' + s)
+                            w = s
+                except:
+                    pass
+                # keep words with length > 2
+                if len(w) < 3:
+                    continue
                 # stem the word
                 w = porter.stem(w)
                 # finally insert the word
                 clean_tokens.append(w)
+                # add once to the vector set
+                token_vector.add(w)
 
             # pickle data
-            with open(os.path.join(TKN_DIR, tknfilename), 'w') as pklfile:
-                pklfile.write(','.join(clean_tokens))
+            with open(os.path.join(TKN_DIR, tknfilename), 'w') as tknfile:
+                tknfile.write('\n'.join(clean_tokens))
 
         except Exception as err:
             print("Exception: {0}".format(err))
             if BREAK_ON_ERROR:
                 break
 
-pickle.dump(no_text, open("no_text.pkl", 'wb'))
+pickle.dump(no_text, open('no_text.pkl', 'wb'))
+pickle.dump(token_vector, open('token_vector.pkl', 'wb'))
+with open('token_vector.tkn', 'w') as vecfile:
+    vecfile.write('\n'.join(sorted(token_vector)))
+print(len(token_vector))
