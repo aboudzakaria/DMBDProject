@@ -24,7 +24,7 @@ BREAK_ON_ERROR = True
 
 # list of xml files that has no text
 no_text = []
-FORCE_NO_TEXT = True
+FORCE_NO_TEXT = False
 
 # NLTK stuff
 HAS_NUMBERS = ".*[0-9]+"
@@ -36,7 +36,7 @@ porter = PorterStemmer()
 # begin processing
 #
 
-token_vector = set([])
+token_vector = {}
 
 for filename in sorted(os.listdir(XML_DIR)):
     # skip not .xml files
@@ -60,24 +60,23 @@ for filename in sorted(os.listdir(XML_DIR)):
         tree = etree.parse(os.path.join(os.path.join(XML_DIR, filename)))
         raw_text = etree.tostring(tree, encoding='utf8', method='text').decode('ascii')
 
-        # check if there's no text
+        # skip documents with no texts
         if not raw_text:
             no_text.append(filename)
             if not FORCE_NO_TEXT:
-                print("SKIPPING: " + filename)
                 continue
 
         # manual fixes
-        raw_text = raw_text.replace('-', ' ') # dashes!
-        raw_text = raw_text.replace('/', ' ') # slashes!
-        raw_text = raw_text.replace('+', ' ') # pluses!
+        #raw_text = raw_text.replace('-', ' ') # dashes!
+        #raw_text = raw_text.replace('/', ' ') # slashes!
+        #raw_text = raw_text.replace('+', ' ') # pluses!
         raw_text = raw_text.lower()
 
         # nltk tokenize words
         tokens = word_tokenize(raw_text)
 
         # process tokens
-        clean_tokens = []
+        doc_tokens = {}
         for w in tokens:
             # filter punctuations with extra check!
             for p in PUNCTUATIONS:
@@ -85,42 +84,58 @@ for filename in sorted(os.listdir(XML_DIR)):
             # filter stopwords
             if w in STOPWORDS:
                 continue
-            # replace numbers into the word 'numero'
+            # replace numbers into the word 'digit'
             if bool(re.match(HAS_NUMBERS, w)):
-                w = "numero"
+                w = "digit"
             # try finding a synonym which is already in the vector!
-            try:
-                synonyms = [porter.stem(s.lower()) for s in wordnet.synsets(w)[0].lemma_names()]
-                for s in synonyms:
-                    if s in token_vector and w != s:
-                        print(w + ' -> ' + s)
-                        w = s
-            except:
-                pass
-            # keep words with length > 2
-            if len(w) < 3:
+            #try:
+            #    synonyms = [porter.stem(s.lower()) for s in wordnet.synsets(w)[0].lemma_names()]
+            #    w = porter.stem(w)
+            #    for s in synonyms:
+            #        if s in token_vector and w != s:
+            #            print(w + ' -> ' + s)
+            #            w = s
+            #            break
+            #except:
+            #    pass
+            # keep words with length > 1
+            if len(w) < 2:
                 continue
             # stem the word
             w = porter.stem(w)
-            # finally insert the word
-            clean_tokens.append(w)
-            # add once to the vector set
-            token_vector.add(w)
+            # insert the word
+            if w in token_vector:
+                if w not in doc_tokens.keys():
+                    doc_tokens[w] = 1
+                    token_vector[w] += 1
+                else:
+                    doc_tokens[w] += 1
+                    
+            else:
+                doc_tokens[w] = 1
+                token_vector[w] = 1
+
 
         # write data
         with open(os.path.join(TKN_DIR, tknfilename), 'w') as tknfile:
-            tknfile.write('\n'.join(clean_tokens))
+            tknfile.write('\n'.join(sorted([','.join([key, str(value)]) for key, value in doc_tokens.items()])))
 
     except Exception as err:
         print("Exception: {0}".format(err))
         if BREAK_ON_ERROR:
             break
 
+# keep tokens that exists in more than 'nmin' documents
+nmin = 2
+copy = token_vector.copy()
+for key, value in copy.items():
+    if value < nmin:
+       del token_vector[key]
 
 with open('no_text.csv', 'w') as no_textfile:
     no_textfile.write('\n'.join(sorted(no_text)))
 
 with open('token_vector.tkn', 'w') as vecfile:
-    vecfile.write('\n'.join(sorted(token_vector)))
+    vecfile.write('\n'.join(sorted([','.join([key, str(value)]) for key, value in token_vector.items()])))
 
-print("token vector size: " + str(len(token_vector)))
+print("token vector size: " + str(len(token_vector.keys())))
