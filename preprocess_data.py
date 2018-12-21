@@ -10,6 +10,7 @@ from nltk.stem.porter import PorterStemmer
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 XML_DIR = os.path.join(CURRENT_DIR, "xml")
 TKN_DIR = os.path.join(CURRENT_DIR, "tkn")
+SEQ_DIR = os.path.join(CURRENT_DIR, 'seq')
 
 if not os.path.exists(XML_DIR):
     print("Error: xml directory not found!")
@@ -17,6 +18,10 @@ if not os.path.exists(XML_DIR):
 
 if not os.path.exists(TKN_DIR):
     os.mkdir(TKN_DIR)
+
+if not os.path.exists(SEQ_DIR):
+    os.mkdir(SEQ_DIR)
+
 
 i, n = 0, -1
 FORCE_PROCESS = True
@@ -50,6 +55,7 @@ for filename in sorted(os.listdir(XML_DIR)):
         break
 
     tknfilename = filename.replace(".xml", ".tkn")
+    seqfilename = filename.replace(".xml", ".seq")
 
     # already processed?
     if os.path.isfile(os.path.join(TKN_DIR, tknfilename)) and not FORCE_PROCESS:
@@ -77,6 +83,7 @@ for filename in sorted(os.listdir(XML_DIR)):
 
         # process tokens
         doc_tokens = {}
+        doc_sequence = []
         for w in tokens:
             # filter punctuations with extra check!
             for p in PUNCTUATIONS:
@@ -103,11 +110,12 @@ for filename in sorted(os.listdir(XML_DIR)):
                 continue
             # stem the word
             w = porter.stem(w)
-            # insert the word
+            # insert the word, count frequency
+            doc_sequence.append(w)
             if w in token_vector:
                 if w not in doc_tokens.keys():
-                    doc_tokens[w] = 1
-                    token_vector[w] += 1
+                    doc_tokens[w] = 1 
+                    token_vector[w] += 1 
                 else:
                     doc_tokens[w] += 1
                     
@@ -120,6 +128,9 @@ for filename in sorted(os.listdir(XML_DIR)):
         with open(os.path.join(TKN_DIR, tknfilename), 'w') as tknfile:
             tknfile.write('\n'.join(sorted([','.join([key, str(value)]) for key, value in doc_tokens.items()])))
 
+        with open(os.path.join(SEQ_DIR, seqfilename), 'w') as seqfile:
+            seqfile.write(' '.join(doc_sequence))
+            
     except Exception as err:
         print("Exception: {0}".format(err))
         if BREAK_ON_ERROR:

@@ -110,6 +110,7 @@ venv.bak/
 xml/
 text/
 tkn/
+seq/
 test.csv
 train.csv
 no_text.csv
