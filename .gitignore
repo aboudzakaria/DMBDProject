@@ -112,4 +112,5 @@ text/
 tkn/
 test.csv
 train.csv
-no_text.pkl
+no_text.csv
+token_vector.tkn
