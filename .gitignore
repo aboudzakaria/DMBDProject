@@ -111,6 +111,7 @@ xml/
 text/
 tkn/
 seq/
+vec/
 test.csv
 train.csv
 no_text.csv
