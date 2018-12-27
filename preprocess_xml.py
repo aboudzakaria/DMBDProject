@@ -141,7 +141,7 @@ nmin = 7
 copy = token_vector.copy()
 for key, value in copy.items():
     if value < nmin:
-       del token_vector[key]
+        del token_vector[key]
 
 with open('no_text.csv', 'w') as no_textfile:
     no_textfile.write('\n'.join(sorted(no_text)))
