@@ -13,6 +13,9 @@ def __file_len(fname):
 N_DOCS = len([name for name in os.listdir('xml')])
 N_TOKENS = __file_len('token_vector.tkn')
 
+if __name__ == "__main__":
+    print("size = ({0},{1})".format(N_DOCS, N_TOKENS))
+
 # allocate memory
 X = np.zeros((N_DOCS, N_TOKENS), dtype=np.bool)
 
