@@ -21,11 +21,15 @@ tokenvec = []
 with open('token_vector.tkn', 'r') as vecfile:
     tokenvec = [l.split(',')[0] for l in vecfile.readlines()]
 
+# file with doc,token indices of the sparse matrix
+sparsefile = open('token_sparse.csv', 'w')
 
 for filename in sorted(os.listdir(TKN_DIR)):
     # skip not .xml files
     if not filename.lower().endswith(".tkn"):
         continue
+
+    docid = int(filename.replace('.tkn', ''))
 
     # process limits
     if n < 0 or i < n:
@@ -43,8 +47,11 @@ for filename in sorted(os.listdir(TKN_DIR)):
     # write token vector for each document
     vecfilename = filename.replace(".tkn", ".vec")
     with open(os.path.join(VEC_DIR, vecfilename), 'w') as vecfile:
-        for token in tokenvec:
+        for tokid in range(len(tokenvec)):
+            token = tokenvec[tokid]
             freq = int(doc_tokens[token]) if token in doc_tokens.keys() else 0
             value = '1' if freq > 0 else '0' # str(freq) ?
             vecfile.write(value + '\n')
+            if freq > 0:
+                sparsefile.write('{0},{1}\n'.format(docid, tokid))
 
