@@ -105,8 +105,8 @@ for filename in sorted(os.listdir(XML_DIR)):
             #            break
             #except:
             #    pass
-            # keep words with length > 1
-            if len(w) < 2:
+            # keep words with length > 2
+            if len(w) < 3:
                 continue
             # stem the word
             w = porter.stem(w)
@@ -137,7 +137,7 @@ for filename in sorted(os.listdir(XML_DIR)):
             break
 
 # keep tokens that exists in more than 'nmin' documents
-nmin = 2
+nmin = 7
 copy = token_vector.copy()
 for key, value in copy.items():
     if value < nmin:
