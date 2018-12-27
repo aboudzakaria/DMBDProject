@@ -95,16 +95,16 @@ for filename in sorted(os.listdir(XML_DIR)):
             if bool(re.match(HAS_NUMBERS, w)):
                 w = "digit"
             # try finding a synonym which is already in the vector!
-            #try:
-            #    synonyms = [porter.stem(s.lower()) for s in wordnet.synsets(w)[0].lemma_names()]
-            #    w = porter.stem(w)
-            #    for s in synonyms:
-            #        if s in token_vector and w != s:
-            #            print(w + ' -> ' + s)
-            #            w = s
-            #            break
-            #except:
-            #    pass
+            try:
+                synonyms = [porter.stem(s.lower()) for s in wordnet.synsets(w)[0].lemma_names()]
+                w = porter.stem(w)
+                for s in synonyms:
+                    if s in token_vector and w != s:
+                        #print(w + ' -> ' + s)
+                        w = s
+                        break
+            except:
+                pass
             # keep words with length > 2
             if len(w) < 3:
                 continue
