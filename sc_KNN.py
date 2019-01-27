@@ -2,6 +2,7 @@ import sys
 import pickle
 import numpy as np
 from data_sparse import *
+from sklearn.metrics import f1_score
 coco = 0
 
 from sklearn.neighbors import KNeighborsClassifier
@@ -23,23 +24,24 @@ def sc_KNN(X_train,X_test,y_train,y_test, k):
     """print(y_pred)
     print(y_test)
     print(y_pred == y_test)"""
-    return (y_pred == y_test).mean()*100
+    
+    return f1_score(y_test, y_pred)
 
 if __name__ == '__main__':
-    __debug = True
+    __debug = False
     ks = [i for i in range(1, 21)]
     
     #get data here
-    X_train = X_train_tf
-    X_test = X_validate_tf
-    y_train = y_train_tf
-    y_test = y_validate_tf
+    X_train = X_tfidf
+    X_test = X_validate_tfidf
+    y_train = y_train_tfidf
+    y_test = y_validate_tfidf
     if __debug:
         ks = [i for i in range(1, 9)]
         X_train = X_train[:100,:]
-        X_test = X_test[:10,:]
+        X_test = X_test[:100,:]
         y_train = y_train[:100]
-        y_test = y_test[:10]
+        y_test = y_test[:100]
        
     print("X_train shape", X_train.shape)
     print("X_test shape", X_test.shape)
@@ -47,4 +49,4 @@ if __name__ == '__main__':
     print("y_test shape", y_test.shape)
     
     for k in ks:
-        print(sc_KNN(X_train,X_test,y_train,y_test,k))
+        print('K= ',k,' ',sc_KNN(X_train,X_test,y_train,y_test,k))
