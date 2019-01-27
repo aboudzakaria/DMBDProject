@@ -107,13 +107,7 @@ venv.bak/
 .vscode/
 
 # data
-xml/
 text/
 tkn/
 seq/
 vec/
-test.csv
-train.csv
-no_text.csv
-token_vector.tkn
-token_sparse.csv
