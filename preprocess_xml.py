@@ -5,7 +5,6 @@ from lxml import etree
 from nltk import word_tokenize
 from nltk.corpus import stopwords, wordnet
 from nltk.stem.porter import PorterStemmer
-#from nltk.tokenize import TweetTokenizer
 
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 XML_DIR = os.path.join(CURRENT_DIR, "xml")
@@ -136,11 +135,12 @@ for filename in sorted(os.listdir(XML_DIR)):
         if BREAK_ON_ERROR:
             break
 
-# keep tokens that exists in more than 'nmin' documents
-nmin = 7
+# keep tokens that exists in more than 'idf_min' documents and less than 'idf_max'
+idf_min = 7
+idf_max = float('inf')
 copy = token_vector.copy()
 for key, value in copy.items():
-    if value < nmin:
+    if value < idf_min or value > idf_max:
         del token_vector[key]
 
 with open('no_text.csv', 'w') as no_textfile:
