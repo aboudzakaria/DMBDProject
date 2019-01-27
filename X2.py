@@ -76,10 +76,11 @@ else:
     with open( 'X2.out' ) as ff:
         line = ff.readline().split(',')
         X2_vals = [ float(l) for l in line]
-            
-sorted_X2_val = X2_vals
-sorted_X2_val.sort(reverse=True)
 
+#print(X2_vals)
+sorted_X2_val = [x for x in X2_vals]
+sorted_X2_val.sort(reverse=True)
+#print(sorted_X2_val)
 threshold_idx = int( (threshold_percentage/100) * len(words) )
 threshold = sorted_X2_val[threshold_idx]
 #print(threshold)
@@ -87,4 +88,5 @@ threshold = sorted_X2_val[threshold_idx]
 with open(token_filename, 'w') as f:
     for i in range(len(words)):
         if X2_vals[i] > threshold:
+            #print(words[i], X2_vals[i])
             f.write("{0},{1}\n".format(words[i],word_df[i]))
