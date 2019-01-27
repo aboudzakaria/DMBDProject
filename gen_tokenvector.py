@@ -18,7 +18,7 @@ BREAK_ON_ERROR = True
 
 # read the token vector (ignore doc frequency)
 tokenvec = []
-with open('token_vector.tkn', 'r') as vecfile:
+with open('token_df.tkn', 'r') as vecfile:
     tokenvec = [l.split(',')[0] for l in vecfile.readlines()]
 
 # file with doc,token indices of the sparse matrix
@@ -38,19 +38,19 @@ for filename in sorted(os.listdir(TKN_DIR)):
         break
 
     # read document tokens and frequencies
-    doc_tokens = {}
+    doc_tf = {}
     with open(os.path.join(TKN_DIR, filename), 'r') as tknfile:
-        doc_tokens = {l.split(',')[0]: l.split(',')[1].replace(
+        doc_tf = {l.split(',')[0]: l.split(',')[1].replace(
             '\n', '') for l in tknfile.readlines()}
 
-    #print(doc_tokens)
+    #print(doc_tf)
 
     # write token vector for each document
     vecfilename = filename.replace(".tkn", ".vec")
     with open(os.path.join(VEC_DIR, vecfilename), 'w') as vecfile:
         for tokid in range(len(tokenvec)):
             token = tokenvec[tokid]
-            freq = int(doc_tokens[token]) if token in doc_tokens.keys() else 0
+            freq = int(doc_tf[token]) if token in doc_tf.keys() else 0
             value = '1' if freq > 0 else '0'  # str(freq) ?
             vecfile.write(value + '\n')
             if freq > 0:
