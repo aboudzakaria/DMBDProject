@@ -30,7 +30,10 @@ TOKEN_LEN_MIN = args.len_min or 3
 DF_MIN = args.df_min or 7
 DF_MAX = args.df_max or 3500
 
-
+# delete this file yrham jiddak
+if not os.path.exists('X2.out'):
+    os.remove('X2.out')
+    
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 XML_DIR = os.path.join(CURRENT_DIR, "xml")
 TKN_DIR = os.path.join(CURRENT_DIR, "tkn")
