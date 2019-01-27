@@ -3,11 +3,14 @@ import os
 import numpy as np
 
 # count number of lines in a file, time and space efficient
+
+
 def __file_len(fname):
     with open(fname) as f:
         for i, _ in enumerate(f):
             pass
     return i + 1
+
 
 # size
 N_DOCS = len([name for name in os.listdir('xml')])

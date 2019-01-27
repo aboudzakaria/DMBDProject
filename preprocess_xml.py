@@ -1,6 +1,8 @@
 """ preprocess xml files to txt. """
 
-import os, re, string
+import os
+import re
+import string
 from lxml import etree
 from nltk import word_tokenize
 from nltk.corpus import stopwords, wordnet
@@ -63,7 +65,8 @@ for filename in sorted(os.listdir(XML_DIR)):
     try:
         # remove xml tags
         tree = etree.parse(os.path.join(os.path.join(XML_DIR, filename)))
-        raw_text = etree.tostring(tree, encoding='utf8', method='text').decode('ascii')
+        raw_text = etree.tostring(
+            tree, encoding='utf8', method='text').decode('ascii')
 
         # skip documents with no texts
         if not raw_text:
@@ -95,7 +98,8 @@ for filename in sorted(os.listdir(XML_DIR)):
                 w = "digit"
             # try finding a synonym which is already in the vector!
             try:
-                synonyms = [porter.stem(s.lower()) for s in wordnet.synsets(w)[0].lemma_names()]
+                synonyms = [porter.stem(s.lower())
+                            for s in wordnet.synsets(w)[0].lemma_names()]
                 w = porter.stem(w)
                 for s in synonyms:
                     if s in token_vector and w != s:
@@ -113,23 +117,23 @@ for filename in sorted(os.listdir(XML_DIR)):
             doc_sequence.append(w)
             if w in token_vector:
                 if w not in doc_tokens.keys():
-                    doc_tokens[w] = 1 
-                    token_vector[w] += 1 
+                    doc_tokens[w] = 1
+                    token_vector[w] += 1
                 else:
                     doc_tokens[w] += 1
-                    
+
             else:
                 doc_tokens[w] = 1
                 token_vector[w] = 1
 
-
         # write data
         with open(os.path.join(TKN_DIR, tknfilename), 'w') as tknfile:
-            tknfile.write('\n'.join(sorted([','.join([key, str(value)]) for key, value in doc_tokens.items()])))
+            tknfile.write('\n'.join(
+                sorted([','.join([key, str(value)]) for key, value in doc_tokens.items()])))
 
         with open(os.path.join(SEQ_DIR, seqfilename), 'w') as seqfile:
             seqfile.write(' '.join(doc_sequence))
-            
+
     except Exception as err:
         print("Exception: {0}".format(err))
         if BREAK_ON_ERROR:
@@ -147,6 +151,7 @@ with open('no_text.csv', 'w') as no_textfile:
     no_textfile.write('\n'.join(sorted(no_text)))
 
 with open('token_vector.tkn', 'w') as vecfile:
-    vecfile.write('\n'.join(sorted([','.join([key, str(value)]) for key, value in token_vector.items()])))
+    vecfile.write('\n'.join(
+        sorted([','.join([key, str(value)]) for key, value in token_vector.items()])))
 
 print("token vector size: " + str(len(token_vector.keys())))

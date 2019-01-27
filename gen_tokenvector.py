@@ -40,7 +40,8 @@ for filename in sorted(os.listdir(TKN_DIR)):
     # read document tokens and frequencies
     doc_tokens = {}
     with open(os.path.join(TKN_DIR, filename), 'r') as tknfile:
-        doc_tokens = {l.split(',')[0]: l.split(',')[1].replace('\n', '') for l in tknfile.readlines()}
+        doc_tokens = {l.split(',')[0]: l.split(',')[1].replace(
+            '\n', '') for l in tknfile.readlines()}
 
     #print(doc_tokens)
 
@@ -50,8 +51,7 @@ for filename in sorted(os.listdir(TKN_DIR)):
         for tokid in range(len(tokenvec)):
             token = tokenvec[tokid]
             freq = int(doc_tokens[token]) if token in doc_tokens.keys() else 0
-            value = '1' if freq > 0 else '0' # str(freq) ?
+            value = '1' if freq > 0 else '0'  # str(freq) ?
             vecfile.write(value + '\n')
             if freq > 0:
                 sparsefile.write('{0},{1}\n'.format(docid, tokid))
-
