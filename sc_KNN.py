@@ -25,10 +25,10 @@ def sc_KNN(X_train,X_test,y_train,y_test, k):
     print(y_test)
     print(y_pred == y_test)"""
     
-    return f1_score(y_test, y_pred)
+    return f1_score(y_test, y_pred) , (y_pred == y_test).mean()
 
 if __name__ == '__main__':
-    __debug = False
+    __debug = True
     ks = [i for i in range(1, 21)]
     
     #get data here
@@ -49,4 +49,6 @@ if __name__ == '__main__':
     print("y_test shape", y_test.shape)
     
     for k in ks:
-        print('K= ',k,' ',sc_KNN(X_train,X_test,y_train,y_test,k))
+        ret = sc_KNN(X_train,X_test,y_train,y_test,k)
+        print('K = {0}, F1 = {1}, Acc ={2}'.format(k,ret[0],ret[1]))
+        sys.stdout.flush()
