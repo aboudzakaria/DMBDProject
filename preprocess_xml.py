@@ -135,12 +135,12 @@ for filename in sorted(os.listdir(XML_DIR)):
         if BREAK_ON_ERROR:
             break
 
-# keep tokens that exists in more than 'idf_min' documents and less than 'idf_max'
-idf_min = 7
-idf_max = float('inf')
+# keep tokens that exists in more than 'df_min' documents and less than 'df_max'
+df_min = 7
+df_max = float('inf')
 copy = token_vector.copy()
 for key, value in copy.items():
-    if value < idf_min or value > idf_max:
+    if value < df_min or value > df_max:
         del token_vector[key]
 
 with open('no_text.csv', 'w') as no_textfile:
