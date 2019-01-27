@@ -8,11 +8,7 @@ argparser.add_argument(
 args = argparser.parse_args()
 
 threshold_percentage = args.threshold or 50
-token_filename = "token_df_X2_{0}.tkn".format(threshold_percentage)
-
-if os.path.isfile(token_filename):
-    print('Already Computed')
-    exit(0)
+token_filename = "token_df_X2.tkn"
 
 words = []
 word_df = [] 

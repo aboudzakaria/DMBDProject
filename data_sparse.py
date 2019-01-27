@@ -13,7 +13,7 @@ def __file_len(fname):
 
 # size
 N_DOCS = len([name for name in os.listdir('xml')])
-N_TOKENS = __file_len('token_df.tkn')
+N_TOKENS = __file_len('token_df_X2.tkn')
 
 if __name__ == "__main__":
     print("size = ({0},{1})".format(N_DOCS, N_TOKENS))

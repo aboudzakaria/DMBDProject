@@ -1,13 +1,6 @@
 "generate boolean, tf, tfidf models"
 import os
 import math
-import argparse
-
-argparser = argparse.ArgumentParser()
-argparser.add_argument(
-    '--token-df', help='token df vector file (default token_tf.tkn)', type=str)
-args = argparser.parse_args()
-TOKEN_DF_FILE = args.token_df or 'token_df.tkn'
 
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 TKN_DIR = os.path.join(CURRENT_DIR, "tkn")
@@ -28,7 +21,7 @@ BREAK_ON_ERROR = True
 # read the token vector (ignore doc frequency)
 tokenvec = []
 token_df = []
-with open(TOKEN_DF_FILE, 'r') as vecfile:
+with open('token_df_X2.tkn', 'r') as vecfile:
     veclines = vecfile.readlines()
     tokenvec = [l.split(',')[0] for l in veclines]
     token_df = [int(l.split(',')[1]) for l in veclines]
