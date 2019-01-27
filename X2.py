@@ -34,11 +34,12 @@ if not os.path.isfile('X2.out'):
             labels.append(int(label))
             #print(id,name,label)
             doc_words = []
-            if not os.path.isfile(os.path.join('vec',str(id)+'.vec')):
+            if not os.path.isfile(os.path.join('tkn',str(id)+'.tkn')):
                 docs_words.append(zeros)
                 continue
-            with open(os.path.join('vec',str(id)+'.vec') ) as vec_file:
-                doc_words = [ int( term_values.split(',')[0] ) for term_values in vec_file]
+            with open(os.path.join('tkn',str(id)+'.tkn') ) as tkn_file:
+                sparse_doc_words = [ str(tkn_line.split(',')[0]) for tkn_line in tkn_file]
+                doc_words = [ int(w in sparse_doc_words) for w in words ]
             docs_words.append(doc_words)
 
     N = len(docs_words)
