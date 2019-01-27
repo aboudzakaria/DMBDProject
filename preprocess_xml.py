@@ -42,7 +42,7 @@ porter = PorterStemmer()
 # begin processing
 #
 
-token_vector = {}
+token_df = {}
 
 for filename in sorted(os.listdir(XML_DIR)):
     # skip not .xml files
@@ -84,7 +84,7 @@ for filename in sorted(os.listdir(XML_DIR)):
         tokens = word_tokenize(raw_text)
 
         # process tokens
-        doc_tokens = {}
+        doc_tf = {}
         doc_sequence = []
         for w in tokens:
             # filter punctuations with extra check!
@@ -102,7 +102,7 @@ for filename in sorted(os.listdir(XML_DIR)):
                             for s in wordnet.synsets(w)[0].lemma_names()]
                 w = porter.stem(w)
                 for s in synonyms:
-                    if s in token_vector and w != s:
+                    if s in token_df and w != s:
                         #print(w + ' -> ' + s)
                         w = s
                         break
@@ -115,21 +115,21 @@ for filename in sorted(os.listdir(XML_DIR)):
             w = porter.stem(w)
             # insert the word, count frequency
             doc_sequence.append(w)
-            if w in token_vector:
-                if w not in doc_tokens.keys():
-                    doc_tokens[w] = 1
-                    token_vector[w] += 1
+            if w in token_df:
+                if w not in doc_tf.keys():
+                    doc_tf[w] = 1
+                    token_df[w] += 1
                 else:
-                    doc_tokens[w] += 1
+                    doc_tf[w] += 1
 
             else:
-                doc_tokens[w] = 1
-                token_vector[w] = 1
+                doc_tf[w] = 1
+                token_df[w] = 1
 
         # write data
         with open(os.path.join(TKN_DIR, tknfilename), 'w') as tknfile:
             tknfile.write('\n'.join(
-                sorted([','.join([key, str(value)]) for key, value in doc_tokens.items()])))
+                sorted([','.join([key, str(value)]) for key, value in doc_tf.items()])))
 
         with open(os.path.join(SEQ_DIR, seqfilename), 'w') as seqfile:
             seqfile.write(' '.join(doc_sequence))
@@ -141,17 +141,17 @@ for filename in sorted(os.listdir(XML_DIR)):
 
 # keep tokens that exists in more than 'df_min' documents and less than 'df_max'
 df_min = 7
-df_max = float('inf')
-copy = token_vector.copy()
+df_max = 5000 * 70 / 100
+copy = token_df.copy()
 for key, value in copy.items():
     if value < df_min or value > df_max:
-        del token_vector[key]
+        del token_df[key]
 
 with open('no_text.csv', 'w') as no_textfile:
     no_textfile.write('\n'.join(sorted(no_text)))
 
-with open('token_vector.tkn', 'w') as vecfile:
+with open('token_df.tkn', 'w') as vecfile:
     vecfile.write('\n'.join(
-        sorted([','.join([key, str(value)]) for key, value in token_vector.items()])))
+        sorted([','.join([key, str(value)]) for key, value in token_df.items()])))
 
-print("token vector size: " + str(len(token_vector.keys())))
+print("token vector size: " + str(len(token_df.keys())))
