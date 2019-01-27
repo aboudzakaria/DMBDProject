@@ -1,5 +1,6 @@
 tokenize
 stemming
+stopwords
 replace synonyms
 token length lower bound
 df upper and lower bounds

@@ -1,12 +1,35 @@
 """ preprocess xml files to txt. """
 
-import os
-import re
-import string
-from lxml import etree
-from nltk import word_tokenize
-from nltk.corpus import stopwords, wordnet
 from nltk.stem.porter import PorterStemmer
+from nltk.corpus import stopwords, wordnet
+from nltk import word_tokenize
+from lxml import etree
+import string
+import re
+import os
+import sys
+import argparse
+
+argparser = argparse.ArgumentParser()
+argparser.add_argument(
+    '--no-stem', help='do not stem words', action='store_true')
+argparser.add_argument(
+    '--no-wordnet', help='stop using wordnet synonyms lookup', action='store_true')
+argparser.add_argument(
+    '--len-min', help='minimum token word lenghth (default 3)', type=int)
+argparser.add_argument(
+    '--df-min', help='token document frequency lower bound (default 7)', type=int)
+argparser.add_argument(
+    '--df-max', help='token document frequency upper bound (default 3500)', type=int)
+args = argparser.parse_args()
+
+# extract command arguments
+USE_STEM = not args.no_stem
+USE_WORDNET = not args.no_wordnet
+TOKEN_LEN_MIN = args.len_min or 3
+DF_MIN = args.df_min or 7
+DF_MAX = args.df_max or 3500
+
 
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 XML_DIR = os.path.join(CURRENT_DIR, "xml")
@@ -97,22 +120,25 @@ for filename in sorted(os.listdir(XML_DIR)):
             if bool(re.match(HAS_NUMBERS, w)):
                 w = "digit"
             # try finding a synonym which is already in the vector!
-            try:
-                synonyms = [porter.stem(s.lower())
-                            for s in wordnet.synsets(w)[0].lemma_names()]
-                w = porter.stem(w)
-                for s in synonyms:
-                    if s in token_df and w != s:
-                        #print(w + ' -> ' + s)
-                        w = s
-                        break
-            except:
-                pass
+            if USE_WORDNET:
+                try:
+                    synonyms = [porter.stem(s.lower()) if USE_STEM else s.lower()
+                                for s in wordnet.synsets(w)[0].lemma_names()]
+                    if USE_STEM:
+                        w = porter.stem(w)
+                    for s in synonyms:
+                        if s in token_df and w != s:
+                            #print(w + ' -> ' + s)
+                            w = s
+                            break
+                except:
+                    pass
             # keep words with length > 2
-            if len(w) < 3:
+            if len(w) < TOKEN_LEN_MIN:
                 continue
             # stem the word
-            w = porter.stem(w)
+            if USE_STEM:
+                w = porter.stem(w)
             # insert the word, count frequency
             doc_sequence.append(w)
             if w in token_df:
@@ -140,13 +166,11 @@ for filename in sorted(os.listdir(XML_DIR)):
             break
 
 # keep tokens that exists in more than 'df_min' documents and less than 'df_max'
-df_min = 7
-df_max = 5000 * 70 / 100
 copy = token_df.copy()
 for key, value in copy.items():
-    if value < df_min:
+    if value < DF_MIN:
         del token_df[key]
-    if value > df_max:
+    if value > DF_MAX:
         #print(key)
         del token_df[key]
 
