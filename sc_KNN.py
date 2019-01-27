@@ -32,7 +32,7 @@ if __name__ == '__main__':
     ks = [i for i in range(1, 21)]
     
     #get data here
-    X_train = X_tfidf
+    X_train = X_train_tfidf
     X_test = X_validate_tfidf
     y_train = y_train_tfidf
     y_test = y_validate_tfidf
@@ -42,7 +42,7 @@ if __name__ == '__main__':
         X_test = X_test[:100,:]
         y_train = y_train[:100]
         y_test = y_test[:100]
-       
+    
     print("X_train shape", X_train.shape)
     print("X_test shape", X_test.shape)
     print("y_train shape", y_train.shape)
