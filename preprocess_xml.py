@@ -144,7 +144,10 @@ df_min = 7
 df_max = 5000 * 70 / 100
 copy = token_df.copy()
 for key, value in copy.items():
-    if value < df_min or value > df_max:
+    if value < df_min:
+        del token_df[key]
+    if value > df_max:
+        #print(key)
         del token_df[key]
 
 with open('no_text.csv', 'w') as no_textfile:
