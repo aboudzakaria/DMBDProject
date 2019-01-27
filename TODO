@@ -1,2 +1,10 @@
-parse by sentences?
-expand contractions
+tokenize
+stemming
+replace synonyms
+token length lower bound
+df upper and lower bounds
+X2 statistics feature selection
+boolean
+tf model
+tfidf model
+entropy model
