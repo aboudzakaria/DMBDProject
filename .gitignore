@@ -107,7 +107,6 @@ venv.bak/
 .vscode/
 
 # data
-text/
-tkn/
-seq/
-vec/
+#tkn/
+#seq/
+#vec/
