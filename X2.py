@@ -1,7 +1,13 @@
 import sys
 import os
+import argparse
 
-threshold_percentage = 50
+argparser = argparse.ArgumentParser()
+argparser.add_argument(
+    '--threshold', help='threshold percentage (default 50)', type=int)
+args = argparser.parse_args()
+
+threshold_percentage = args.threshold or 50
 token_filename = "token_df_X2_{0}.tkn".format(threshold_percentage)
 
 if os.path.isfile(token_filename):
