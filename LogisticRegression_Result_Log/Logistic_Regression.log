@@ -1,0 +1,16 @@
+
+Using Logistic Regression .. 
+
+X_train shape (3301, 1398)
+X_test shape (1101, 1398)
+y_train shape (3301,)
+y_test shape (1101,)
+
+
+Accuracy: 0.965
+
+F1 Score: 0.9136363636363637
+
+Confusion Matrix:
+[[862  16]
+ [ 22 201]]
